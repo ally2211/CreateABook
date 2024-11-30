@@ -124,4 +124,255 @@ The script generates a PDF file named `KJV_Bible_with_Margins.pdf` in the projec
 - Include headers and footers for navigation and styling.
 - Support for multilingual Bibles or alternative translations.
 
+
+
+### **Tools and Libraries**
+1. **Node.js** with **Express**: For building the API.
+2. **`fs`**: To handle file operations (reading and writing the comments JSON file).
+3. **Middleware**: `body-parser` (to parse JSON request bodies) and `multer` (to handle file uploads).
+
+---
+
+### **API Endpoints**
+
+1. **GET `/comments`**:
+   - Retrieve comments for a specific book, chapter, or verse.
+   - Query parameters:
+     - `book`: The name of the book (e.g., Genesis).
+     - `chapter`: (Optional) The chapter number.
+     - `verse`: (Optional) The verse number.
+
+2. **POST `/comments`**:
+   - Add a comment to a specific verse.
+   - Request body: `{ book, chapter, verse, comment }`.
+
+3. **PUT `/comments`**:
+   - Edit a comment for a specific verse.
+   - Request body: `{ book, chapter, verse, comment }`.
+
+4. **DELETE `/comments`**:
+   - Remove a comment for a specific verse.
+   - Query parameters: `book`, `chapter`, and `verse`.
+
+5. **POST `/upload-comments`**:
+   - Upload a JSON file containing comments for the entire Bible.
+   - Overwrites the existing `comments.json` file.
+
+---
+
+### **Code Implementation**
+
+#### 1. **Setup the Server**
+
+```javascript
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
+
+const app = express();
+const PORT = 3000;
+
+// Middleware for JSON parsing
+app.use(express.json());
+
+// Comments file path
+const commentsFile = path.join(__dirname, 'comments.json');
+
+// Ensure comments.json exists
+if (!fs.existsSync(commentsFile)) {
+  fs.writeFileSync(commentsFile, JSON.stringify({}), 'utf-8');
+}
+
+// Multer setup for file uploads
+const upload = multer({ dest: 'uploads/' });
+```
+
+---
+
+#### 2. **Endpoints**
+
+##### **GET `/comments`**
+
+```javascript
+app.get('/comments', (req, res) => {
+  const { book, chapter, verse } = req.query;
+
+  // Read comments file
+  const comments = JSON.parse(fs.readFileSync(commentsFile, 'utf-8'));
+
+  if (!book) {
+    return res.status(400).json({ error: 'Book is required' });
+  }
+
+  let result = comments[book];
+  if (chapter) {
+    result = result?.[chapter];
+    if (verse) {
+      result = result?.[verse];
+    }
+  }
+
+  if (!result) {
+    return res.status(404).json({ error: 'No comments found' });
+  }
+
+  res.json(result);
+});
+```
+
+---
+
+##### **POST `/comments`**
+
+```javascript
+app.post('/comments', (req, res) => {
+  const { book, chapter, verse, comment } = req.body;
+
+  if (!book || !chapter || !verse || !comment) {
+    return res.status(400).json({ error: 'Book, chapter, verse, and comment are required' });
+  }
+
+  // Read comments file
+  const comments = JSON.parse(fs.readFileSync(commentsFile, 'utf-8'));
+
+  // Add or update the comment
+  comments[book] = comments[book] || {};
+  comments[book][chapter] = comments[book][chapter] || {};
+  comments[book][chapter][verse] = comment;
+
+  // Save the updated comments
+  fs.writeFileSync(commentsFile, JSON.stringify(comments, null, 2));
+  res.status(201).json({ message: 'Comment added successfully' });
+});
+```
+
+---
+
+##### **PUT `/comments`**
+
+```javascript
+app.put('/comments', (req, res) => {
+  const { book, chapter, verse, comment } = req.body;
+
+  if (!book || !chapter || !verse || !comment) {
+    return res.status(400).json({ error: 'Book, chapter, verse, and comment are required' });
+  }
+
+  // Read comments file
+  const comments = JSON.parse(fs.readFileSync(commentsFile, 'utf-8'));
+
+  if (!comments[book]?.[chapter]?.[verse]) {
+    return res.status(404).json({ error: 'Comment not found' });
+  }
+
+  // Update the comment
+  comments[book][chapter][verse] = comment;
+
+  // Save the updated comments
+  fs.writeFileSync(commentsFile, JSON.stringify(comments, null, 2));
+  res.json({ message: 'Comment updated successfully' });
+});
+```
+
+---
+
+##### **DELETE `/comments`**
+
+```javascript
+app.delete('/comments', (req, res) => {
+  const { book, chapter, verse } = req.query;
+
+  if (!book || !chapter || !verse) {
+    return res.status(400).json({ error: 'Book, chapter, and verse are required' });
+  }
+
+  // Read comments file
+  const comments = JSON.parse(fs.readFileSync(commentsFile, 'utf-8'));
+
+  if (!comments[book]?.[chapter]?.[verse]) {
+    return res.status(404).json({ error: 'Comment not found' });
+  }
+
+  // Remove the comment
+  delete comments[book][chapter][verse];
+
+  // Clean up empty objects
+  if (Object.keys(comments[book][chapter]).length === 0) {
+    delete comments[book][chapter];
+  }
+  if (Object.keys(comments[book]).length === 0) {
+    delete comments[book];
+  }
+
+  // Save the updated comments
+  fs.writeFileSync(commentsFile, JSON.stringify(comments, null, 2));
+  res.json({ message: 'Comment deleted successfully' });
+});
+```
+
+---
+
+##### **POST `/upload-comments`**
+
+```javascript
+app.post('/upload-comments', upload.single('file'), (req, res) => {
+  const { file } = req;
+
+  if (!file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  // Read the uploaded file
+  const uploadedComments = JSON.parse(fs.readFileSync(file.path, 'utf-8'));
+
+  // Save the uploaded comments
+  fs.writeFileSync(commentsFile, JSON.stringify(uploadedComments, null, 2));
+
+  // Remove the uploaded file
+  fs.unlinkSync(file.path);
+
+  res.json({ message: 'Comments file uploaded successfully' });
+});
+```
+
+---
+
+#### 3. **Start the Server**
+
+```javascript
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
+```
+
+---
+
+### **Testing the Endpoints**
+
+1. **GET `/comments`**:
+   ```bash
+   curl "http://localhost:3000/comments?book=Genesis&chapter=1&verse=1"
+   ```
+
+2. **POST `/comments`**:
+   ```bash
+   curl -X POST -H "Content-Type: application/json" -d '{"book":"Genesis","chapter":"1","verse":"1","comment":"This is a test comment"}' http://localhost:3000/comments
+   ```
+
+3. **PUT `/comments`**:
+   ```bash
+   curl -X PUT -H "Content-Type: application/json" -d '{"book":"Genesis","chapter":"1","verse":"1","comment":"Updated comment"}' http://localhost:3000/comments
+   ```
+
+4. **DELETE `/comments`**:
+   ```bash
+   curl -X DELETE "http://localhost:3000/comments?book=Genesis&chapter=1&verse=1"
+   ```
+
+5. **POST `/upload-comments`**:
+   ```bash
+   curl -X POST -F "file=@comments.json" http://localhost:3000/upload-comments
+   ```
+
 ---

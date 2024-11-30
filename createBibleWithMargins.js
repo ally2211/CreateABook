@@ -5,7 +5,8 @@ const path = require('path');
 // File paths
 const booksFile = path.join(__dirname, 'Bible-kjv-master', 'Books.json');
 const booksDir = path.join(__dirname, 'Bible-kjv-master');
-const commentsFile = path.join(__dirname, 'Bible-kjv-master', 'Comments.json');
+const commentsFile = path.join(__dirname, 'uploads', 'Comments.json');
+//const commentsFile = path.join(__dirname, 'Bible-kjv-master', 'Comments.json');
 
 // Read the Books and Comments JSON
 const books = JSON.parse(fs.readFileSync(booksFile, 'utf-8'));
