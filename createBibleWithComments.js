@@ -51,10 +51,15 @@ async function createBibleWithCommentsPDF() {
   const lineHeight = fontSize + 4; // Line height for spacing
   let yOffset = pageHeight - 100; // Current vertical position
 
+  let pageNumber = 0;  //Initialize page number
+  const totalPages = [];  //store all pages to add numbers later
+
   for (const book of books) {
     const bookFile = path.join(booksDir, `${book}.json`);
     const bookData = JSON.parse(fs.readFileSync(bookFile, 'utf-8'));
     let page = pdfDoc.addPage([pageWidth, pageHeight]); // Add a new page
+    pageNumber++;
+    totalPages.push(page);
 
     // Draw the book title
     page.drawText(`Book: ${book}`, { x: 80, y: yOffset, size: 18 });
@@ -66,6 +71,7 @@ async function createBibleWithCommentsPDF() {
 
       // Check if there's enough space; if not, move to the next page
       if (yOffset - estimatedHeight < 50) {
+        pageNumber++;
         page = pdfDoc.addPage([pageWidth, pageHeight]); // Add a new page
         yOffset = pageHeight - 100;
       }
@@ -83,6 +89,7 @@ async function createBibleWithCommentsPDF() {
         if (yOffset - verseHeight < 50) {
           page = pdfDoc.addPage([pageWidth, pageHeight]); // Add a new page
           yOffset = pageHeight - 100;
+          pageNumber++;
         }
 
         // Wrap and print the scripture text
@@ -92,11 +99,21 @@ async function createBibleWithCommentsPDF() {
         verseLines.forEach((line) => {
 
           if (yOffset < 50) {  //3 lines after header
+            pageNumber++;
             page = pdfDoc.addPage([pageWidth, pageHeight]); // Add a new page
             yOffset = pageHeight - 50;
+            //pageNumber++;
           }
+          //pageNumber++;
           page.drawText(line, { x: 80, y: yOffset, size: fontSize });
           yOffset -= lineHeight;
+          // Add page number
+          page.drawText(`Page ${pageNumber}`, {
+            x: pageWidth / 2 - 20, // Center the page number horizontally
+            y: 30, // Position at the bottom of the page
+            size: 12,
+            color: rgb(0.5, 0.3, 0.1),
+          });
         });
 
         // Draw vertical line
@@ -125,8 +142,10 @@ async function createBibleWithCommentsPDF() {
           // Ensure the next verse starts below the comment
           yOffset = Math.min(yOffset, commentY);
         }
+
       }
     }
+
   }
 
   // Save the PDF
