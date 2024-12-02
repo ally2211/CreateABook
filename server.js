@@ -2,12 +2,18 @@ const express = require('express');
 const Redis = require('ioredis');
 const fs = require('fs');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+
+const swaggerDocument = YAML.load('./swagger.yaml');
+
 
 // Import routes
 const commentsRouter = require('./routes/comments');
 const uploadRouter = require('./routes/upload');
 
 const app = express();
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 const redis = new Redis(); // Initialize Redis client
 const PORT = 3000;
 

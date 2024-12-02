@@ -1,0 +1,174 @@
+openapi: 3.0.0
+info:
+  title: Bible API
+  version: 1.0.0
+  description: API to fetch scripture and manage comments for Bible verses.
+
+paths:
+  /scripture:
+    get:
+      summary: Get scripture for a specific book, chapter, and verse
+      parameters:
+        - name: book
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: chapter
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: verse
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns the requested scripture.
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  book: "Genesis"
+                  chapter: "1"
+                  verse: "1"
+                  text: "In the beginning, God created the heaven and the earth."
+        400:
+          description: Missing required parameters.
+        500:
+          description: Internal server error.
+
+  /comments:
+    get:
+      summary: Get comments for a specific book, chapter, or verse
+      parameters:
+        - name: book
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: chapter
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: verse
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns the requested comments.
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  book: "Genesis"
+                  chapter: "1"
+                  verse: "1"
+                  comments: ["This is the first verse of the Bible."]
+        400:
+          description: Missing required parameters.
+        500:
+          description: Internal server error.
+
+    post:
+      summary: Add a comment to a specific verse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - book
+                - chapter
+                - verse
+                - comment
+              properties:
+                book:
+                  type: string
+                chapter:
+                  type: string
+                verse:
+                  type: string
+                comment:
+                  type: string
+              example:
+                book: "Genesis"
+                chapter: "1"
+                verse: "1"
+                comment: "This is the first verse of the Bible."
+      responses:
+        201:
+          description: Comment added successfully.
+        400:
+          description: Missing required fields.
+        500:
+          description: Internal server error.
+
+    put:
+      summary: Edit a comment for a specific verse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - book
+                - chapter
+                - verse
+                - comment
+              properties:
+                book:
+                  type: string
+                chapter:
+                  type: string
+                verse:
+                  type: string
+                comment:
+                  type: string
+              example:
+                book: "Genesis"
+                chapter: "1"
+                verse: "1"
+                comment: "Updated comment for the first verse of the Bible."
+      responses:
+        200:
+          description: Comment updated successfully.
+        404:
+          description: Comment not found.
+        500:
+          description: Internal server error.
+
+    delete:
+      summary: Delete a comment for a specific verse
+      parameters:
+        - name: book
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: chapter
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: verse
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Comment deleted successfully.
+        404:
+          description: Comment not found.
+        500:
+          description: Internal server error.
