@@ -52,7 +52,7 @@ async function createAntiqueBiblePDF() {
   const commentWidth = 400; // Width for comment text
   const fontSize = 12; // Font size for both scripture and comments
   const lineHeight = fontSize + 4; // Line height for spacing
-  let yOffset = pageHeight - 190; // Current vertical position
+  let yOffset = pageHeight -180; // Current vertical position
 
   // Load custom font and graphics
   pdfDoc.registerFontkit(fontkit); // Register fontkit
@@ -93,7 +93,7 @@ async function createAntiqueBiblePDF() {
         height: 100,
     });
 
-
+    //yOffset -= 140;
     // Draw the book title
     //page.drawText(`Book: ${book}`, { x: 80, y: yOffset, size: 18 });
     // Add book title in antique font
@@ -105,7 +105,7 @@ async function createAntiqueBiblePDF() {
         color: rgb(0.5, 0.3, 0.1),
     });
 
-    yOffset -= 30;
+    //yOffset -= 30;
 
     for (const chapter of bookData.chapters) {
       // Estimate the height required for the chapter header and at least 3 verses
@@ -126,7 +126,7 @@ async function createAntiqueBiblePDF() {
       }
 
       // Print the chapter header
-      yOffset -= 40; // Add space before the chapter header
+      yOffset -= 30; // Add space before the chapter header
       //page.drawText(`Chapter ${chapter.chapter}`, { x: 80, y: yOffset, size: 16 });
       page.drawText(`Chapter ${chapter.chapter}`, {
         x: 80,
@@ -144,7 +144,7 @@ async function createAntiqueBiblePDF() {
         // Move to the next page if there’s not enough space
         if (yOffset - verseHeight < 50) {
           page = pdfDoc.addPage([pageWidth, pageHeight]); // Add a new page
-          yOffset = pageHeight - 100;
+          yOffset = pageHeight;
           pageNumber++;
         //*************************************************************************** */          
           // Draw the background
@@ -154,7 +154,7 @@ async function createAntiqueBiblePDF() {
             height: pageHeight,
           });
         }
-
+        
         // Wrap and print the scripture text
         //change wrap width here
         const verseLines = wrapText(`${verse.verse}: ${verse.text}`, scriptureWidth - 40, fontSize);
