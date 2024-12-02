@@ -99,10 +99,9 @@ async function createBibleWithCommentsPDF() {
         verseLines.forEach((line) => {
 
           if (yOffset < 50) {  //3 lines after header
-            pageNumber++;
+            //pageNumber++;
             page = pdfDoc.addPage([pageWidth, pageHeight]); // Add a new page
             yOffset = pageHeight - 50;
-            //pageNumber++;
           }
           //pageNumber++;
           page.drawText(line, { x: 80, y: yOffset, size: fontSize });
