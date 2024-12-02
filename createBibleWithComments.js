@@ -1,6 +1,8 @@
 const { PDFDocument, rgb } = require('pdf-lib');
 const fs = require('fs');
 const path = require('path');
+const logger = require('./logger'); // Adjust the path based on your file structure
+
 
 // Paths to files
 const commentsFile = path.join(__dirname, 'Bible-kjv-master/comments.json');

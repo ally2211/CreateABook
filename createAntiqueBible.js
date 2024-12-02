@@ -3,6 +3,7 @@ const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 const fontkit = require('fontkit'); // Import fontkit
 const fs = require('fs');
 const path = require('path');
+const logger = require('./logger'); // Adjust the path based on your file structure
 
 
 // Paths to files
@@ -45,6 +46,7 @@ function wrapText(text, maxWidth, fontSize) {
 }
 
 async function createAntiqueBiblePDF() {
+  try {
   const pdfDoc = await PDFDocument.create(); // Create a new PDF document
   const pageWidth = 1000; // Extended page width for wider scripture text
   const pageHeight = 792; // Standard page height
@@ -105,6 +107,7 @@ async function createAntiqueBiblePDF() {
         font: antiqueFont,
         color: rgb(0.5, 0.3, 0.1),
     });
+    logger.info(`Added Book: ${book} to the page`);
 
     yOffset -= 20;
 
@@ -136,6 +139,7 @@ async function createAntiqueBiblePDF() {
         font: antiqueFont,
         color: rgb(0.3, 0.2, 0.1),
       });
+      
       yOffset -= 30; // Add space after the chapter header
 
       for (const verse of chapter.verses) {
@@ -237,6 +241,9 @@ async function createAntiqueBiblePDF() {
   const pdfBytes = await pdfDoc.save(); // Save the PDF document
   fs.writeFileSync('./Antique_Bible.pdf', pdfBytes); // Write to file
   console.log('PDF created: Antique_Bible.pdf');
+  logger.info('Successfully created the Antique Bible PDF.');
+} catch (error) {
+    logger.error(`Error during PDF creation: ${error.message}`);
 }
-
+}
 createAntiqueBiblePDF(); // Run the function

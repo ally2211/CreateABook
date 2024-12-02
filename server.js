@@ -63,7 +63,11 @@ async function cacheScripture(book, chapter, verse) {
 app.get('/scripture', async (req, res) => {
   const { book, chapter, verse } = req.query;
 
+  logger.info(`Received request for scripture: Book=${book}, Chapter=${chapter}, Verse=${verse}`);
+
+  
   if (!book) {
+    logger.warn(`Book not found: ${book}`);
     return res.status(400).json({ error: 'Book is required' });
   }
 
@@ -71,11 +75,14 @@ app.get('/scripture', async (req, res) => {
     const scripture = await cacheScripture(book, chapter, verse);
 
     if (!scripture) {
+      logger.warn(`Scripture not found: ${book} ${chapter}:${verse}`);
       return res.status(404).json({ error: 'Scripture not found' });
     }
 
+    logger.info(`Successfully fetched scripture: ${book} ${chapter}:${verse}`);
     res.json(scripture);
   } catch (error) {
+    logger.error(`Error fetching scripture: ${error.message}`);
     console.error('Error fetching scripture:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
