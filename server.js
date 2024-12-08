@@ -4,12 +4,12 @@ const fs = require('fs');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
+const { connectDb } = require('./controllers/commentsController'); // Adjust the path as needed
 
 const swaggerDocument = YAML.load('./swagger.yaml');
-
-
-// Import routes
-const commentsRouter = require('./routes/comments');
+//multi routes
+const commentsRoutes = require("./routes/commentsRoutes");
+const logger = require("./logger"); // Logging configuration
 const uploadRouter = require('./routes/upload');
 
 const app = express();
@@ -21,8 +21,9 @@ const PORT = 3000;
 app.use(express.json());
 
 // Use existing routes
-app.use('/comments', commentsRouter);
-app.use('/upload-comments', uploadRouter);
+app.use('/routes', commentsRoutes);
+//app.use('/upload-comments', uploadRouter);
+//app.use("/comments", commentsRoutes); // Mount comments routes
 
 // Scripture caching logic
 async function cacheScripture(book, chapter, verse) {
@@ -81,6 +82,7 @@ app.get('/scripture', async (req, res) => {
 
     logger.info(`Successfully fetched scripture: ${book} ${chapter}:${verse}`);
     res.json(scripture);
+
   } catch (error) {
     logger.error(`Error fetching scripture: ${error.message}`);
     console.error('Error fetching scripture:', error);
@@ -107,10 +109,18 @@ async function preloadScriptureToRedis() {
   } catch (error) {
     console.error('Error preloading scripture:', error);
   }
+  
+  // Handle app termination signals
+  process.on('SIGINT', async () => {
+    console.log("Closing MongoDB connection...");
+    await closeDb();
+    process.exit(0);
+  });
 }
 
 // Start the server
 app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  logger.info(`Server running at http://localhost:${PORT}`);
   await preloadScriptureToRedis(); // Preload scripture data
 });

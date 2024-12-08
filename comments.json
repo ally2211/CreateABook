@@ -1,0 +1,58 @@
+[
+  {
+    "_id": "63f37b9e8a012c001f632d4e",
+    "userId": "user1",
+    "book": "Genesis",
+    "chapter": 1,
+    "verse": 1,
+    "comment": "This is a new comment about the creation story."
+  },
+  {
+    "_id": "63f37b9e8a012c001f632d4f",
+    "userId": "user2",
+    "book": "Genesis",
+    "chapter": 1,
+    "verse": 1,
+    "comment": "The verse demonstrates God's power over creation."
+  },
+  {
+    "_id": "63f37b9e8a012c001f632d50",
+    "userId": "user1",
+    "book": "Genesis",
+    "chapter": 1,
+    "verse": 2,
+    "comment": "God creates order out of chaos."
+  },
+  {
+    "_id": "63f37b9e8a012c001f632d51",
+    "userId": "user3",
+    "book": "Genesis",
+    "chapter": 1,
+    "verse": 2,
+    "comment": "A beautiful description of God's spirit moving over the waters."
+  },
+  {
+    "_id": "63f37b9e8a012c001f632d52",
+    "userId": "user2",
+    "book": "Genesis",
+    "chapter": 1,
+    "verse": 3,
+    "comment": "Let there be light is one of the most powerful declarations."
+  },
+  {
+    "_id": "63f37b9e8a012c001f632d53",
+    "userId": "user1",
+    "book": "Genesis",
+    "chapter": 2,
+    "verse": 1,
+    "comment": "Thus the heavens and the earth were finished—a profound summary."
+  },
+  {
+    "_id": "63f37b9e8a012c001f632d54",
+    "userId": "user3",
+    "book": "Genesis",
+    "chapter": 2,
+    "verse": 2,
+    "comment": "God rested on the seventh day, establishing a divine rhythm."
+  }
+]

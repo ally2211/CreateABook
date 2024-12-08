@@ -4,15 +4,6 @@ const path = require('path');
 const logger = require('../logger'); // Import the logger
 
 const router = express.Router();
-
-// Path to the comments file
-const commentsFile = path.join(__dirname, '../Bible-kjv-master/comments.json');
-
-// Ensure comments.json exists
-if (!fs.existsSync(commentsFile)) {
-  fs.writeFileSync(commentsFile, JSON.stringify({}), 'utf-8');
-}
-
 // GET: Retrieve comments
 router.get('/', (req, res) => {
   const { book, chapter, verse } = req.query;

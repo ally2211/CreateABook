@@ -1,0 +1,21 @@
+2024-12-07 14:27:31 [ERROR]: Error during PDF creation: verseComments?.filter is not a function
+2024-12-07 14:30:36 [ERROR]: Error during PDF creation: verseComments?.filter is not a function
+2024-12-07 20:19:54 [ERROR]: Error during PDF creation: client is not defined
+2024-12-07 20:40:44 [ERROR]: Error during PDF creation: client is not defined
+2024-12-07 20:42:06 [ERROR]: Error during PDF creation: client is not defined
+2024-12-07 21:45:22 [ERROR]: Error during PDF creation: client is not defined
+2024-12-07 22:02:24 [ERROR]: Error during PDF creation: client is not defined
+2024-12-07 22:03:00 [ERROR]: Error during PDF creation: client is not defined
+2024-12-07 22:04:38 [ERROR]: Error during PDF creation: client is not defined
+2024-12-07 22:09:24 [ERROR]: Error during PDF creation: client is not defined
+2024-12-07 22:10:00 [ERROR]: Error during PDF creation: client is not defined
+2024-12-07 22:11:01 [ERROR]: Error during PDF creation: client is not defined
+2024-12-08 00:08:36 [ERROR]: Error during PDF creation: Cannot read properties of undefined (reading 'collection')
+2024-12-08 00:09:48 [ERROR]: Error during PDF creation: Cannot read properties of undefined (reading 'collection')
+2024-12-08 00:29:22 [ERROR]: Error during PDF creation: Cannot read properties of undefined (reading 'collection')
+2024-12-08 00:45:21 [ERROR]: Error during PDF creation: Database instance is undefined.
+2024-12-08 00:49:11 [ERROR]: Error during PDF creation: Cannot access 'currentUserId' before initialization
+2024-12-08 01:17:44 [ERROR]: Error during PDF creation: userCommentObj is not defined
+2024-12-08 01:18:55 [ERROR]: Error during PDF creation: userComment is not defined
+2024-12-08 01:24:53 [ERROR]: Error during PDF creation: text.split is not a function
+2024-12-08 01:27:11 [ERROR]: Error during PDF creation: text.split is not a function
