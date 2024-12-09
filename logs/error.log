@@ -19,3 +19,4 @@
 2024-12-08 01:18:55 [ERROR]: Error during PDF creation: userComment is not defined
 2024-12-08 01:24:53 [ERROR]: Error during PDF creation: text.split is not a function
 2024-12-08 01:27:11 [ERROR]: Error during PDF creation: text.split is not a function
+2024-12-08 02:43:09 [ERROR]: Error during PDF creation: currentUserId is not defined

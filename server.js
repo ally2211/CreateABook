@@ -2,28 +2,44 @@ const express = require('express');
 const Redis = require('ioredis');
 const fs = require('fs');
 const path = require('path');
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const { connectDb } = require('./controllers/commentsController'); // Adjust the path as needed
+//const swaggerUi = require('swagger-ui-express');
+//const YAML = require('yamljs');
+const { connectDb, closeDb } = require('./controllers/commentsController'); // Adjust the path as needed
 
-const swaggerDocument = YAML.load('./swagger.yaml');
+//const swaggerDocument = YAML.load('./swagger.yaml');
+const { swaggerDocs, swaggerUi } = require('./api-docs/swagger'); // Swagger setup
+
+
+
+
 //multi routes
 const commentsRoutes = require("./routes/commentsRoutes");
 const logger = require("./logger"); // Logging configuration
 const uploadRouter = require('./routes/upload');
+const { authenticateToken } = require('./auth');
 
 const app = express();
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 const redis = new Redis(); // Initialize Redis client
-const PORT = 3000;
+const PORT = 3001;
 
 // Middleware
 app.use(express.json());
 
+// Use Swagger UI
+//app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+// Register comments routes
+app.use('/comments', commentsRoutes); // All routes in commentsRoutes.js are prefixed with /comments
+
+
 // Use existing routes
-app.use('/routes', commentsRoutes);
+//app.use('/routes', commentsRoutes);
 //app.use('/upload-comments', uploadRouter);
 //app.use("/comments", commentsRoutes); // Mount comments routes
+app.use((req, res, next) => {
+    console.log(`Incoming request: ${req.method} ${req.url}`);
+    next();
+});
 
 // Scripture caching logic
 async function cacheScripture(book, chapter, verse) {
@@ -117,10 +133,22 @@ async function preloadScriptureToRedis() {
     process.exit(0);
   });
 }
+app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+        console.log(middleware.route.path);
+    } else if (middleware.name === 'router') {
+        middleware.handle.stack.forEach((handler) => {
+            if (handler.route) {
+                console.log(handler.route.path);
+            }
+        });
+    }
+});
 
 // Start the server
 app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
   logger.info(`Server running at http://localhost:${PORT}`);
   await preloadScriptureToRedis(); // Preload scripture data
 });

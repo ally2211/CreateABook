@@ -4,7 +4,7 @@ const fontkit = require('fontkit'); // Import fontkit
 const fs = require('fs');
 const path = require('path');
 const logger = require('./logger'); // Adjust the path based on your file structure
-const currentUserId = "user1"; // Replace with the actual userId from authentication
+//const currentUserId = "user2"; // Replace with the actual userId from authentication
 const { connectDb, closeDb, getComments } = require('./controllers/commentsController');
 
 // Paths to files
@@ -46,9 +46,13 @@ function wrapText(text, maxWidth, fontSize) {
   return lines;
 }
 
-async function createAntiqueBiblePDF() {
+async function createAntiqueBiblePDF_multiUser(currentUserId) {
+  if (!currentUserId) {
+    throw new Error('currentUserId is required');
+  }
   let client; // Declare client outside the try-catch-finally block
   try {
+  console.log(`Starting PDF generation for user: ${currentUserId}`);
   const { db, client: dbClient } = await connectDb(); // Connect to the database
   client = dbClient; // Assign client for closing in finally
   
@@ -66,8 +70,8 @@ async function createAntiqueBiblePDF() {
   const pdfDoc = await PDFDocument.create(); // Create a new PDF document
   const pageWidth = 1000; // Extended page width for wider scripture text
   const pageHeight = 792; // Standard page height
-  const scriptureWidth = 600; // Width for scripture text
-  const commentWidth = 300; // Width for comment text
+  const scriptureWidth = 500; // Width for scripture text
+  const commentWidth = 450; // Width for comment text
   const fontSize = 12; // Font size for both scripture and comments
   const lineHeight = fontSize + 4; // Line height for spacing
   let yOffset = pageHeight - 190; // Current vertical position
@@ -109,7 +113,7 @@ async function createAntiqueBiblePDF() {
     page.drawImage(headerDecoration, {
         x: 50,
         y: pageHeight - 150,
-        width: 600,
+        width: 500,
         height: 100,
     });
 
@@ -125,8 +129,18 @@ async function createAntiqueBiblePDF() {
         color: rgb(0.5, 0.3, 0.1),
     });
     logger.info(`Added Book: ${book} to the page`);
-
-    yOffset -= 20;
+     // Add the "Commented by" line
+    yOffset -= 30;
+    page.drawText(`Commented by ${currentUserId}`, {
+        x: 80, // Align with the book title
+        y: yOffset,
+        size: 14,
+        font: antiqueFont,
+        color: rgb(0.3, 0.3, 0.3),
+    });
+    yOffset -= 30; // Add spacing below the "Commented by" line
+    //logger.info(`Commented by: ${currentUserId} to the page`);
+   // yOffset -= 20;
 
     for (const chapter of bookData.chapters) {
       // Estimate the height required for the chapter header and at least 3 verses
@@ -294,4 +308,5 @@ async function createAntiqueBiblePDF() {
     await closeDb(); // Close the database connection
 }
 }
-createAntiqueBiblePDF(); // Run the function
+//createAntiqueBiblePDF_multiUser(); // Run the function
+module.exports = { createAntiqueBiblePDF_multiUser };
