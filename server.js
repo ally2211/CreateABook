@@ -21,7 +21,7 @@ const { authenticateToken } = require('./auth');
 const app = express();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 const redis = new Redis(); // Initialize Redis client
-const PORT = 3001;
+const PORT = 3000;
 
 // Middleware
 app.use(express.json());

@@ -31,7 +31,7 @@ const router = express.Router();
  */
 
 //generating a pdf in response to an API request
-router.get('/generate-pdf', authenticateToken, async (req, res) => {
+router.get("/generate-pdf", authenticateToken, async (req, res) => {
     console.log('Inside /generate-pdf handler');
     try {
         const { db } = await connectDb();
@@ -68,7 +68,7 @@ router.get("/", authenticateToken, async (req, res) => {
 // Add a new comment
 router.post("/", authenticateToken, async (req, res) => {
   const { book, chapter, verse, comment } = req.body;
-  const userId = req.userId; // Extracted from JWT
+  const userId = req.user?.userId; // Extracted from JWT
 
   if (!book || !chapter || !verse || !comment) {
     return res.status(400).json({ error: "Book, chapter, verse, and comment are required" });
@@ -83,9 +83,10 @@ router.post("/", authenticateToken, async (req, res) => {
   }
 });
 
-router.put('/comments', authenticateToken, async (req, res) => {
+router.put('/', authenticateToken, async (req, res) => {
     const { book, chapter, verse, comment } = req.body;
-    const userId = req.user.userId; // Extracted from JWT
+    const userId = req.user?.userId; // Extracted from JWT
+    console.log('Inside PUT /comments');
 
     if (!book || !chapter || !verse || !comment) {
         return res.status(400).json({ error: 'Book, chapter, verse, and comment are required' });
@@ -108,9 +109,9 @@ router.put('/comments', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-router.delete('/comments', authenticateToken, async (req, res) => {
-    const { book, chapter, verse } = req.query;
-    const userId = req.user.userId; // Extracted from JWT
+router.delete('/', authenticateToken, async (req, res) => {
+    const { book, chapter, verse } = req.body;
+    const userId = req.user?.userId; // Extracted from JWT
 
     if (!book || !chapter || !verse) {
         return res.status(400).json({ error: 'Book, chapter, and verse are required' });

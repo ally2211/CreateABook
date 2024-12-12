@@ -83,20 +83,28 @@ async function addComment(book, chapter, verse, userId, commentText) {
 async function editComment(book, chapter, verse, userId, newCommentText) {
     const { db } = await connectDb();
     console.log('Using database:', db.databaseName);
-    console.log('Database instance in addComment:', db); // Log the database instance
+    console.log('Editing comment:', { book, chapter, verse, userId, newCommentText });
+
     
     if (!db || typeof db.collection !== 'function') {
         throw new Error('Invalid database instance: db.collection is not a function');
     }
 
     const commentsCollection = db.collection('comments');
+    
     console.log('Comments collection:', commentsCollection); // Log the collection
 
     const query = { userId, book, chapter: parseInt(chapter), verse: parseInt(verse) };
     const update = { $set: { comment: newCommentText } };
 
-    const result = await commentsCollection.updateOne(query, update);
-    return result.matchedCount > 0; // Return true if a comment was updated
+    try {
+        const result = await commentsCollection.updateOne(query, update);
+        console.log('Update result:', result);
+        return result.matchedCount > 0; // Return true if a comment was updated
+    } catch (error) {
+        console.error('Error editing comment:', error.message);
+        throw error;
+    }
 }
 
 // Delete an existing comment
@@ -104,6 +112,7 @@ async function deleteComment(book, chapter, verse, userId) {
     const { db } = await connectDb();
     const commentsCollection = db.collection('comments');
 
+    console.log('Deleting comment:', { book, chapter, verse, userId, commentText });
     const query = { userId, book, chapter: parseInt(chapter), verse: parseInt(verse) };
     const result = await commentsCollection.deleteOne(query);
 

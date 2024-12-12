@@ -5,6 +5,7 @@ const SECRET_KEY = 'myKey'; // Replace with a secure key
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Expect "Bearer <token>"
+  console.log(`Authorization Header: ${req.headers['authorization']}`);
 
   console.log('Authorization Header:', authHeader); // Debug log
 
